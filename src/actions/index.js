@@ -33,10 +33,9 @@ function setUsers(users) {
     }
 }
 
-function setTransactions(transactions, pagination) {
+function setTransactions(transactions) {
     return {
         transactions,
-        pagination,
         type: 'SET_TRANSACTIONS'
     }
 }
@@ -61,15 +60,15 @@ export function GetUsers(users) {
     }
 }
 
-export function GetTransactions(id, action) {
+export function GetTransactions(id) {
     return (dispatch, getState) => {
         dispatch(StartRequest());
-        const { ws, userId, apiKey, pagination, selectedUser } = getState();
+        const { ws, userId, apiKey } = getState();
         if (apiKey) {
             const uri = `{"id":${userId},"method":"call","params":[${apiKey},"get_relative_account_history",["${id}",1,100,8000]]}`;
             sendAndRetrieve(uri, ws)
                 .then(data => {
-                    dispatch(setTransactions(data.result), pagination);
+                    dispatch(setTransactions(data.result));
                 })
         }
         else {
@@ -78,7 +77,7 @@ export function GetTransactions(id, action) {
                 const uri = `{"id":${userId},"method":"call","params":[${resp.id},"get_relative_account_history",["${id}",1,100,8000]]}`;
                 sendAndRetrieve(uri, ws)
                 .then(data => {
-                    dispatch(setTransactions(data.result, pagination));
+                    dispatch(setTransactions(data.result));
                 })
             })
         } 
